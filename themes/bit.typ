@@ -23,6 +23,13 @@
 //
 // All standard touying arguments (config, repeat, setting, composer) are
 // forwarded transparently.
+//
+// Pipeline note: the header bar and footer are merged into the page
+// configuration via `config-page(header: ..., footer: ...)`, following
+// the structure of Touying's built-in themes (e.g. `university`).  They
+// must NOT be emitted as content inside the slide body, and the body
+// must NOT contain a `set page(...)` rule — either would force a page
+// break and split the frame title from the frame body.
 #let slide(
   config: (:),
   repeat: auto,
@@ -32,28 +39,41 @@
   subtitle: none,
   ..bodies,
 ) = touying-slide-wrapper(self => {
-  // Resolve title: explicit argument > heading > (none / empty bar)
-  let resolved-title = if title != auto {
-    title
-  } else {
-    utils.display-current-heading(level: 2)
+  if title != auto {
+    self.store.title = title
   }
-
+  self.store.subtitle = subtitle
+  let header(self) = {
+    set std.align(top)
+    grid(
+      rows: (auto, auto),
+      row-gutter: 0pt,
+      render-header(self),
+      if self.store.progress-bar {
+        components.progress-bar(
+          height: progress-bar-height,
+          self.colors.secondary,
+          self.colors.tertiary,
+        )
+      },
+    )
+  }
+  let footer(self) = {
+    set std.align(bottom)
+    footer-content(self)
+  }
+  let self = utils.merge-dicts(
+    self,
+    config-page(
+      header: header,
+      footer: footer,
+    ),
+  )
   let new-setting = body => {
-    show: setting
-    // Decorative header and footer — absolutely placed at page edges.
-    render-header(self, title: resolved-title, subtitle: subtitle)
-    render-footer(self)
-    // Body flows inside a padded area that clears the header and footer.
     set text(size: body-font-size, fill: text-dark)
     set par(leading: body-leading)
-    pad(
-      left: content-x-margin,
-      right: content-x-margin,
-      top: content-top-inset,
-      bottom: content-bottom-inset,
-      body,
-    )
+    show: setting
+    body
   }
   touying-slide(
     self: self,
@@ -213,10 +233,13 @@
   show: touying-slides.with(
     config-page(
       ..utils.page-args-from-aspect-ratio(aspect-ratio),
-      // Zero margin — header and footer are placed absolutely at the
-      // physical page edges.  Body content is padded individually in
-      // each slide function via content-top-inset / content-bottom-inset.
-      margin: 0pt,
+      header-ascent: 0em,
+      footer-descent: 0em,
+      margin: (
+        top: content-top-inset,
+        bottom: footer-height + content-bottom-inset,
+        x: content-x-margin,
+      ),
     ),
     config-common(
       slide-fn: slide,
@@ -226,6 +249,14 @@
       init: (self: none, body) => {
         set text(size: body-font-size, fill: text-dark)
         set par(leading: body-leading)
+        // Default footnote styling — compact size with consistent
+        // spacing above the bottom margin (and thus the footer bar).
+        set footnote.entry(
+          clearance: footnote-clearance,
+          gap: footnote-gap,
+          indent: footnote-indent,
+        )
+        show footnote.entry: set text(size: footnote-font-size)
         body
       },
       alert: utils.alert-with-primary-color,
@@ -238,6 +269,8 @@
       neutral-darkest: text-dark,
     ),
     config-store(
+      title: auto,
+      subtitle: none,
       progress-bar: progress-bar,
       header-logo: header-logo,
       title-institute-logo: title-institute-logo,

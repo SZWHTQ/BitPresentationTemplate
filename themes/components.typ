@@ -4,19 +4,32 @@
 #import "@preview/touying:0.7.4": *
 #import "tokens.typ": *
 
-// Top header bar rendered on normal content slides.
+// Top header bar for normal content slides.
 //
-// Placed full-bleed at the physical top edge (x=0, y=0).  Title text
-// and the optional logo are vertically centered within the header bar.
+// Returns the full-width green bar content for use as the page header
+// (via Touying's `config-page(header: ...)`).  Touying's
+// zero-margin-header mechanism stretches the page header to the full
+// page width, so no absolute placement is needed here.  Title text and
+// the optional logo are vertically centered within the header bar.
+//
+// The title is resolved from `self.store.title`:
+//   auto      — current level-2 heading (heading-based authoring).
+//   none      — no header bar is rendered.
+//   otherwise — the given content, or a `self => content` function.
 //
 // The logo is resolved as follows:
 //   1. `self.store.header-logo` — if set via `config-store`.
 //   2. `self.info.logo`        — the default logo from `config-info`.
 //   3. `none`                  — no logo displayed.
-//
-// Only rendered when `title` is not `none`.
-#let render-header(self, title: none, subtitle: none) = {
+#let render-header(self) = {
+  let title = self.store.at("title", default: auto)
   if title == none { return }
+  let resolved-title = if title == auto {
+    utils.display-current-heading(level: 2)
+  } else {
+    utils.call-or-display(self, title)
+  }
+  let subtitle = self.store.at("subtitle", default: none)
 
   let header-logo = if "header-logo" in self.store and self.store.header-logo != none {
     self.store.header-logo
@@ -26,116 +39,112 @@
     none
   }
 
-  place(
-    top + left,
-    dx: 0pt,
-    dy: 0pt,
-    rect(
+  rect(
+    width: 100%,
+    height: header-height,
+    fill: bit-green,
+    inset: 0pt,
+    box(
       width: 100%,
       height: header-height,
-      fill: bit-green,
-      inset: 0pt,
-      box(
-        width: 100%,
-        height: header-height,
-        inset: (left: 1.1em, right: 1.0em),
-        grid(
-          columns: (1fr, auto),
-          align: (left + horizon, right + horizon),
-          box(
-            height: header-height,
-            align(left + horizon)[
-              #text(fill: text-light, size: header-title-size, weight: "bold")[#title]
-              #if subtitle != none [
-                #h(0.6em)
-                #text(fill: text-light.lighten(25%), size: header-subtitle-size)[#subtitle]
-              ]
-            ],
-          ),
-          box(
-            height: header-height,
-            align(right + horizon)[
-              #if header-logo != none {
-                box(height: header-logo-height, header-logo)
-              }
-            ],
-          ),
+      inset: (left: 1.1em, right: 1.0em),
+      grid(
+        columns: (1fr, auto),
+        align: (left + horizon, right + horizon),
+        box(
+          height: header-height,
+          align(left + horizon)[
+            #text(fill: text-light, size: header-title-size, weight: "bold")[#resolved-title]
+            #if subtitle != none [
+              #h(0.6em)
+              #text(fill: text-light.lighten(25%), size: header-subtitle-size)[#subtitle]
+            ]
+          ],
+        ),
+        box(
+          height: header-height,
+          align(right + horizon)[
+            #if header-logo != none {
+              box(height: header-logo-height, header-logo)
+            }
+          ],
         ),
       ),
     ),
   )
 }
 
-// Bottom footer bar rendered on every slide.
+// Footer content — three contiguous colored segments forming a Beamer-style
+// footline.  Returns pure content without any absolute placement wrapper so
+// it can be used as a page footer or placed manually.
 //
-// Placed full-bleed at the physical bottom edge.  The footer is split
-// into three contiguous colored segments (Beamer-style footline):
 //   left   — author / institution    (darkest green)
 //   center — presentation title      (medium green)
 //   right  — date / slide counter    (lightest green)
 //
 // Each segment is a separate rect so the color boundaries are visible.
 // Text is vertically centered within each segment.
-#let render-footer(self) = {
-  place(
-    bottom + left,
-    dx: 0pt,
-    dy: 0pt,
-    grid(
-      columns: footer-columns,
-      rows: (footer-height,),
-      column-gutter: 0pt,
-      row-gutter: 0pt,
-      // Left segment — author / institution
-      rect(
-        width: 100%,
-        height: footer-height,
-        fill: footer-left-fill,
-        inset: 0pt,
-        align(center + horizon,
-          pad(x: 0.8em,
-            text(fill: text-light, size: footer-font-size)[
-              #self.info.author
-              #if self.info.institution != none [
-                #sym.space (#self.info.institution)
-              ]
-            ],
-          ),
-        ),
-      ),
-      // Center segment — presentation title
-      rect(
-        width: 100%,
-        height: footer-height,
-        fill: footer-center-fill,
-        inset: 0pt,
-        align(center + horizon,
+//
+// On normal slides this is used as the Touying page footer (via
+// `config-page(footer: ...)`); Touying's zero-margin-footer mechanism
+// stretches it to the full page width.  For special slides (title,
+// section, ending) that use zero-margin absolute layouts, wrap it with
+// render-footer(self) instead.
+#let footer-content(self) = {
+  grid(
+    columns: footer-columns,
+    rows: (footer-height,),
+    column-gutter: 0pt,
+    row-gutter: 0pt,
+    // Left segment — author / institution
+    rect(
+      width: 100%,
+      height: footer-height,
+      fill: footer-left-fill,
+      inset: 0pt,
+      align(center + horizon,
+        pad(x: 0.8em,
           text(fill: text-light, size: footer-font-size)[
-            #self.info.title
+            #self.info.author
+            #if self.info.institution != none [
+              #sym.space (#self.info.institution)
+            ]
           ],
         ),
       ),
-      // Right segment — date / slide counter in a two-column grid
-      rect(
-        width: 100%,
-        height: footer-height,
-        fill: footer-right-fill,
-        inset: 0pt,
-        align(right + horizon,
-          pad(right: footer-right-inset,
-            grid(
-              columns: (auto, auto),
-              column-gutter: footer-date-page-gap,
-              align: (center + horizon, right + horizon),
-              text(fill: text-light, size: footer-font-size)[
-                #utils.display-info-date(self)
-              ],
-              text(fill: text-light, size: footer-font-size)[
-                #context [
-                  #utils.slide-counter.display() / #utils.last-slide-number
-                ]
-              ],
-            ),
+    ),
+    // Center segment — presentation title
+    rect(
+      width: 100%,
+      height: footer-height,
+      fill: footer-center-fill,
+      inset: 0pt,
+      align(center + horizon,
+        text(fill: text-light, size: footer-font-size)[
+          #self.info.title
+        ],
+      ),
+    ),
+    // Right segment — date / slide counter in a two-column grid
+    rect(
+      width: 100%,
+      height: footer-height,
+      fill: footer-right-fill,
+      inset: 0pt,
+      align(right + horizon,
+        pad(right: footer-right-inset,
+          grid(
+            columns: (auto, auto),
+            column-gutter: footer-date-page-gap,
+            align: (center + horizon, right + horizon),
+            text(fill: text-light, size: footer-font-size)[
+              #utils.display-info-date(self)
+            ],
+            text(fill: text-light, size: footer-font-size)[
+              #context [
+                #utils.slide-counter.display() / #utils.last-slide-number
+              ]
+            ],
           ),
         ),
       ),

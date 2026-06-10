@@ -14,12 +14,25 @@
 #let header-height = 2.35em
 #let footer-height = 0.85em
 
-// Content area insets — body is padded inward by these amounts.
-// content-top-inset must be larger than header-height so body text
-// starts below the green header bar.
+// Content area insets — the theme converts these into page margins:
+//   margin.top    = content-top-inset
+//   margin.bottom = footer-height + content-bottom-inset
+//   margin.x      = content-x-margin
+// The header bar lives in the top margin and the footer in the bottom
+// margin, so content-top-inset must be larger than header-height for
+// body text to start below the green header bar.
 #let content-x-margin = 1.7em
 #let content-top-inset = 3.25em
-#let content-bottom-inset = 1.55em
+#let content-bottom-inset = 1.0em
+
+// Progress bar (optional, below the header bar) thickness.
+#let progress-bar-height = 3pt
+
+// Footnote styling — applied via set/show rules in the theme init.
+#let footnote-font-size = 8pt
+#let footnote-clearance = 0.35em
+#let footnote-gap = 0.2em
+#let footnote-indent = 1em
 
 // Font sizes.
 #let header-title-size = 22pt
