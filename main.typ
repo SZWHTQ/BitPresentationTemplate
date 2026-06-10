@@ -14,7 +14,7 @@
   config-info(
     title: [Work Progress],
     author: [Author],
-    institution: [北京理工大学]
+    institution: [北京理工大学],
   ),
 )
 
@@ -25,7 +25,6 @@
 = 使用示例
 
 == Hello
-=== test
 
 Welcome to the Bit Theme for Touying!
 
@@ -34,12 +33,25 @@ This is a green university-style presentation theme.
 == Using Blocks
 
 #green-block[Note][
-  You can use `green-block` for theorems, lemmas#footnote[Footnote text], and highlighted #footnote[Another footnote] content. #lorem(30)
+  You can use `green-block` for theorems, lemmas, and highlighted content.
+]
+
+== Footnote Test
+
+Text with a footnote#footnote[Footnote text.]
+
+More body text here to ensure the content area is well
+populated.#footnote[A second footnote for spacing verification.]
+
+== Block Footnote Test
+
+#green-block[Note][
+  Content with a footnote#footnote[Footnote text inside a green block.]
+  inside the green-block environment.
 ]
 
 = 总结
 
-==
-#place(center + horizon, dy: 5.5cm)[
-  #text(size: 36pt, weight: "bold")[谢谢]
-] 
+== Thanks
+
+谢谢!

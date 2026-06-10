@@ -127,6 +127,22 @@ prescribed strategy.
 - Garay, J., Kiayias, A., & Leonardos, N. (2015). The Bitcoin Backbone
   Protocol. _Proceedings of EUROCRYPT 2015._
 
+== Footnote Test
+
+Text with a default Typst footnote#footnote[Footnote text appears above the
+theme footer.] on a normal content slide.
+
+More body text to verify that the footnote separator and footnote text
+are positioned correctly above the page footer bar.#footnote[A second
+footnote for multi-footnote spacing verification.]
+
+== Block Footnote Test
+
+#green-block[Note][
+  Content with a footnote#footnote[Footnote text inside a green block.]
+  inside the green-block environment.
+]
+
 // ---- Section 2 ----
 
 = 总结
