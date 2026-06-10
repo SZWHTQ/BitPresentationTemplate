@@ -165,40 +165,56 @@
   )
 }
 
-// Green block component for theorem / lemma / quote content.
+// Colored callout block for theorems, lemmas, notes, and highlights.
 //
-// Usage:
-//   #green-block[Lemma 1][
-//     Content of the lemma ...
-//   ]
-#let green-block(title, body) = {
+// `block-env` is the general form: an optional title bar over a tinted
+// body, both colors configurable.  The named-argument API is the
+// canonical one:
+//
+//   #block-env(title: [Lemma 1])[ ... ]            // titled
+//   #block-env[ ... ]                              // no title bar
+//   #block-env(title: [Warning], bar-fill: red, border: red)[ ... ]
+//
+#let block-env(
+  body,
+  title: none,
+  bar-fill: bit-green-dark,
+  body-fill: bit-green-pale,
+  border: bit-green,
+) = {
   block(
     width: 100%,
     above: 1em,
     below: 1em,
     radius: 0.3em,
-    stroke: (paint: bit-green, thickness: 0.5pt),
+    stroke: (paint: border, thickness: 0.5pt),
     fill: none,
     {
       grid(
         columns: (1fr,),
         row-gutter: 0pt,
-        
+
+        if title != none {
+          rect(
+            width: 100%,
+            height: 1.35em,
+            fill: bar-fill,
+            radius: (top-left: 0.3em, top-right: 0.3em),
+            inset: (x: 0.7em, y: 0pt),
+            align(left + horizon)[
+              #text(fill: text-light, weight: "bold")[#title]
+            ],
+          )
+        },
+
         rect(
           width: 100%,
-          height: 1.35em,
-          fill: bit-green-dark,
-          radius: (top-left: 0.3em, top-right: 0.3em),
-          inset: (x: 0.7em, y: 0pt),
-          align(left + horizon)[
-            #text(fill: text-light, weight: "bold")[#title]
-          ],
-        ),
-        
-        rect(
-          width: 100%,
-          fill: bit-green-pale,
-          radius: (bottom-left: 0.3em, bottom-right: 0.3em),
+          fill: body-fill,
+          radius: if title != none {
+            (bottom-left: 0.3em, bottom-right: 0.3em)
+          } else {
+            0.3em
+          },
           inset: (
             left: 0.8em,
             right: 0.8em,
@@ -211,3 +227,44 @@
     },
   )
 }
+
+// green-block — the default green callout.
+//
+// Backward-compatible with both the original positional title form and
+// a title-less form:
+//
+//   #green-block[Lemma 1][ Content ... ]   // title + body
+//   #green-block[ Content ... ]            // body only, no title bar
+//
+#let green-block(..args) = {
+  let pos = args.pos()
+  if pos.len() >= 2 {
+    block-env(pos.at(1), title: pos.at(0))
+  } else if pos.len() == 1 {
+    block-env(pos.at(0))
+  } else {
+    panic("green-block expects [title][body] or [body]")
+  }
+}
+
+// alert-block — a high-emphasis callout in the darkest green.
+//
+//   #alert-block(title: [Caution])[ ... ]
+#let alert-block(body, title: none) = block-env(
+  body,
+  title: title,
+  bar-fill: bit-green-dark,
+  body-fill: bit-green-light,
+  border: bit-green-dark,
+)
+
+// example-block — a low-emphasis callout in pale green.
+//
+//   #example-block(title: [Example])[ ... ]
+#let example-block(body, title: none) = block-env(
+  body,
+  title: title,
+  bar-fill: bit-green,
+  body-fill: bit-green-pale,
+  border: bit-green,
+)
