@@ -1,12 +1,13 @@
 // examples/replica.typ
 // Demo presentation for the Bit theme — heading-based authoring.
 //
-// Compile:
-//   typst compile examples/replica.typ --root .
+// Compile (no --root needed; imports the installed @local package):
+//   typst compile examples/replica.typ
+//
+// If you have not installed the package locally yet, run `make install`
+// from the repo root first (see README → "Install locally").
 
-#import "@preview/touying:0.7.4": *
-#import "../themes/bit.typ": *
-#import "../themes/tokens.typ": *
+#import "@local/bit-presentation-template:0.1.0": *
 
 #show: bit-theme.with(
   aspect-ratio: "16-9",
@@ -16,14 +17,14 @@
     author: [Feng Kaiyu, Jiang Yingqi],
     institution: [北京理工大学],
     // Date defaults to datetime.today() from the theme.
-    logo: image("../themes/assets/bit_logo.pdf", height: title-logo-height),
+    // Logo defaults to the bundled bit_logo.pdf; pass `logo: none` to drop it.
   ),
-  // Header emblem and optional title-slide institution mark.
-  // Comment out to use only the default bit_logo.pdf everywhere.
-  config-store(
-    header-logo: image("../themes/assets/bit_logo.pdf", height: header-logo-height),
-    title-institute-logo: image("../themes/assets/header.svg", height: title-institute-logo-height),
-  ),
+  // Header emblem and optional title-slide institution mark.  Both default
+  // to the bundled assets; override or set to `none` to customize.
+  // config-store(
+  //   header-logo: bit-logo(),
+  //   title-institute-logo: bit-emblem(),
+  // ),
 )
 
 // ---- 1. Title slide ----
@@ -82,6 +83,21 @@ can gain by deviating from the honest protocol.  Even under
 conservative assumptions about the adversary's capabilities,
 preemptive broadcasting is never worse than following the
 prescribed strategy.
+
+== Block Variants
+
+#green-block[Definition][
+  A standard green callout for definitions and theorems.
+]
+
+#alert-block(title: [Caution])[
+  A high-emphasis callout for warnings and key constraints.
+]
+
+#example-block(title: [Example])[
+  A low-emphasis callout for worked examples and asides.
+]
+
 
 == Visual Illustrations
 
@@ -152,3 +168,7 @@ footnote for multi-footnote spacing verification.]
 谢谢!
 
 Questions and discussion are welcome.
+
+// A full-bleed emphasis slide for the closing takeaway.
+#focus-slide[Preemptive broadcasting is never worse.]
+

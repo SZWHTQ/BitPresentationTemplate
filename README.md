@@ -1,12 +1,22 @@
-# bit-theme
+# bit-presentation-template
 
 A green university-style Beamer theme for [Touying](https://github.com/touying-typ/touying) 0.7.4.
+
+## Install locally
+
+The theme is a Typst package.  Install it into your local package
+namespace once, then import it from any document with no `--root` flag:
+
+```bash
+make install      # copies the package to the @local Typst namespace
+```
+
+To remove it again: `make uninstall`.
 
 ## Quick start
 
 ```typst
-#import "@preview/touying:0.7.4": *
-#import "themes/bit.typ": *
+#import "@local/bit-presentation-template:0.1.0": *
 
 #show: bit-theme.with(
   aspect-ratio: "16-9",
@@ -16,7 +26,7 @@ A green university-style Beamer theme for [Touying](https://github.com/touying-t
     author: [Author Name],
     institution: [Institution],
     date: datetime(year: 2026, month: 6, day: 9),
-    logo: image("themes/assets/bit_logo.pdf", height: 2.4em),
+    // logo defaults to the bundled bit_logo.pdf; pass `logo: none` to drop it.
   ),
 )
 
@@ -92,6 +102,8 @@ The main theme function.  Use with `#show: bit-theme.with(...)`.
 | `progress-bar` | `false` | Show a thin progress bar below the header |
 | `institution` | `北京理工大学` | Default institution (overridden by `config-info`) |
 | `logo` | `bit_logo.pdf` | Default title-slide logo (overridden by `config-info`) |
+| `lang` | `"zh"` | UI label language (`"zh"` or `"en"`) — see [Localization](#localization) |
+| `labels` | `(:)` | Per-key label overrides, e.g. `(toc: [Agenda])` |
 | `..args` | — | Forwarded to `touying-slides.with()` |
 
 ### `title-slide`
@@ -112,7 +124,7 @@ headings using Typst's built-in `outline`.  Title bar and outline
 content render together on a single page.
 
 ```typst
-#toc-slide()           // default title "目录"
+#toc-slide()           // localized title (目录 / Contents per `lang`)
 #toc-slide(title: [Outline], depth: 2)
 ```
 
@@ -125,15 +137,34 @@ and the slide counter is frozen (not counted).
 #ending-slide[谢谢!]
 ```
 
-### `green-block`
+### `focus-slide`
 
-A colored block for theorems, lemmas, and highlighted content.
+A full-bleed green emphasis slide (Beamer's "standout" frame) for a
+single key takeaway.  Content is large, centered, and light-on-green.
 
 ```typst
-#green-block[Lemma 1][
-  Content of the lemma ...
-]
+#focus-slide[The key result is X.]
+#focus-slide(size: 48pt)[Bigger text]
 ```
+
+### Block components
+
+A flexible callout block with three ready-made variants plus a
+configurable core.
+
+```typst
+#green-block[Lemma 1][ Content ... ]   // titled (positional, back-compat)
+#green-block[ Content ... ]            // no title bar
+
+#alert-block(title: [Caution])[ ... ]     // high emphasis
+#example-block(title: [Example])[ ... ]   // low emphasis
+
+// Fully configurable core:
+#block-env(title: [Custom], bar-fill: red, body-fill: red.lighten(80%))[ ... ]
+```
+
+`block-env` parameters: `title` (default `none`), `bar-fill`,
+`body-fill`, `border`.
 
 ### Optional header logo
 
@@ -144,43 +175,51 @@ image in the header (e.g. `header.svg` as a wordmark), pass
 ```typst
 #show: bit-theme.with(
   config-info(
-    logo: image("themes/assets/bit_logo.pdf", height: 2.4em),
+    // logo defaults to the bundled bit_logo.pdf.
   ),
   config-store(
-    header-logo: image("themes/assets/header.svg", height: 2.4em),
+    header-logo: bit-emblem(),   // use header.svg as the header wordmark
   ),
 )
 ```
 
 The title slide always uses `self.info.logo`.
 
+The bundled assets are exposed as the lazy accessors `bit-logo()`
+(bit_logo.pdf) and `bit-emblem()` (header.svg).  They are functions, so
+importing the theme never force-loads the files — call them only where
+you want the image.
+
 ## Files
 
 | File | Purpose |
 |---|---|
-| `themes/bit.typ` | Theme entry point — exports `bit-theme`, `slide`, `title-slide`, `toc-slide`, `ending-slide` |
+| `lib.typ` | Package entry point — re-exports the full API |
+| `typst.toml` | Package manifest |
+| `themes/bit.typ` | Theme implementation — `bit-theme`, `slide`, `title-slide`, `toc-slide`, `ending-slide`, `focus-slide`, asset accessors |
 | `themes/tokens.typ` | Design tokens — colors, sizes, spacing |
-| `themes/components.typ` | Reusable components — `render-header`, `footer-content`, `render-footer`, `green-block` |
+| `themes/components.typ` | Reusable components — `render-header`, `footer-content`, `render-footer`, `block-env`, `green-block`, `alert-block`, `example-block` |
 | `themes/assets/bit_logo.pdf` | Default logo (title slide and headers) |
-| `themes/assets/header.svg` | Optional header emblem (via `config-store`) |
+| `themes/assets/header.svg` | Optional header emblem |
 | `examples/replica.typ` | Full demo presentation |
 | `main.typ` | Minimal smoke-test entry point |
 
 ## Compile
 
+Install the package first (`make install`), then compile with no
+`--root` flag:
+
 ```bash
-# From the project root:
-typst compile examples/replica.typ --root .
-typst compile main.typ --root .
+typst compile examples/replica.typ
+typst compile main.typ
 
 # Or use the Makefile:
 make compile-example
 make compile-main
 make watch-example
+make all          # both decks
+make clean        # remove generated PDFs
 ```
-
-The `--root .` flag is required so that `../themes/` imports work from
-the `examples/` directory.
 
 ## Design tokens
 
@@ -313,18 +352,45 @@ config-info(
 )
 ```
 
+## Localization
+
+UI labels (currently just the table-of-contents title) follow the
+`lang` parameter.  Built-in tables cover `"zh"` (default, 目录) and
+`"en"` (Contents).  Override individual labels with `labels`:
+
+```typst
+#show: bit-theme.with(
+  lang: "en",                  // 目录 → Contents
+  labels: (toc: [Agenda]),     // or override a single key
+  config-info(...),
+)
+```
+
+A per-slide override is still available: `#toc-slide(title: [Outline])`.
+
+## Handling content overflow
+
+A single slide does not auto-shrink to fit oversized content.  Options,
+in order of preference:
+
+1. **Split the content** across multiple `==` slides — the cleanest fix.
+2. **Reduce text size locally** for one dense slide:
+   `#slide(title: [...])[ #set text(size: 16pt); ... ]`.
+3. **Scale a single large element** (a wide table or figure) to the
+   content width:
+   ```typst
+   #scale(x: 80%, y: 80%, reflow: true)[ #big-table ]
+   ```
+
 ## Known limitations
 
-- **`--root .` required:** The `../themes/` import in `examples/` crosses
-  outside the default project root.  Pass `--root .` when compiling.
 - **Footnote placement is approximate:** Footnotes render above the
   bottom margin, so there is a small gap (`content-bottom-inset`)
   between the footnote block and the footer bar.  Footnote placement
   has not been fully verified beyond "renders above the footer on
   normal slides" — do not rely on pixel-exact positioning.
-- **Overly long body content:** On a single slide, very long body text
-  overflows the content area.  Split long content across multiple
-  slides.
+- **No auto-fit for long content:** A single slide does not shrink to
+  fit oversized body text — see [Handling content overflow](#handling-content-overflow).
 - **Subtitle only via explicit `#slide()`:** Markdown headings do not
   carry subtitle information.  Use `#slide(title: ..., subtitle: ...)`
   when you need a subtitle.

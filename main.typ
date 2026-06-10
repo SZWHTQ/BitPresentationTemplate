@@ -1,12 +1,13 @@
 // main.typ
 // Minimal entry point for quick testing of the Bit theme.
 //
-// Compile:
-//   typst compile main.typ --root .
+// Compile (no --root needed; imports the installed @local package):
+//   typst compile main.typ
+//
+// Run `make install` from the repo root first if you haven't installed
+// the package to your local Typst namespace yet.
 
-#import "@preview/touying:0.7.4": *
-#import "themes/bit.typ": *
-#import "themes/tokens.typ": *
+#import "@local/bit-presentation-template:0.1.0": *
 
 #show: bit-theme.with(
   aspect-ratio: "16-9",
