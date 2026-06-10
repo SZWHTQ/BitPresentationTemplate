@@ -89,12 +89,17 @@
 //
 // Renders a deep-green rounded title box with author, institution,
 // date, and logo — each positioned at a fixed vertical offset from
-// the page top.  Footer remains at the physical bottom.
+// the page top.  Uses a zero-margin page with an absolutely placed
+// footer overlay, since all elements are positioned absolutely.
 //
 // Counted as slide 1 by default.  To exclude it from numbering:
 //   #title-slide(config: config-common(freeze-slide-counter: true))
 #let title-slide(config: (:), ..args) = touying-slide-wrapper(self => {
-  self = utils.merge-dicts(self, config)
+  self = utils.merge-dicts(
+    self,
+    config-page(margin: 0pt, header: none, footer: none),
+    config,
+  )
   let info = self.info + args.named()
 
   let body = {
@@ -139,15 +144,18 @@
 // Triggered automatically when a level-1 heading (`= Section`) is
 // encountered.  Displays the section title centered in green with a
 // decorative rule, positioned at a fixed vertical offset from the
-// page top.  Footer remains at the physical bottom.
-//
-// No normal header bar is shown on section divider slides.
+// page top.  Uses a zero-margin page with an absolutely placed footer
+// overlay.  No normal header bar is shown on section divider slides.
 #let new-section-slide(
   config: (:),
   level: 1,
   numbered: true,
   body,
 ) = touying-slide-wrapper(self => {
+  self = utils.merge-dicts(
+    self,
+    config-page(margin: 0pt, header: none, footer: none),
+  )
   let slide-body = {
     render-footer(self)
     place(top + center, dy: section-slide-title-y, align(center)[
@@ -171,6 +179,7 @@
   self = utils.merge-dicts(
     self,
     config-common(freeze-slide-counter: true),
+    config-page(margin: 0pt, header: none, footer: none),
     config,
   )
   let slide-body = {
@@ -191,9 +200,10 @@
 // Usage:
 //   #toc-slide()
 //
-// Uses Typst's built-in `outline` to generate an automatic table of
-// contents from `= Section` headings.  The default title is "目录".
-// Pass an explicit `title:` to override.
+// Implemented as a single normal slide so the "目录" title bar and the
+// outline content always stay on the same page.  Uses Typst's built-in
+// `outline` to list `= Section` headings.  Pass an explicit `title:`
+// to override the default.
 #let toc-slide(title: [目录], depth: 1) = {
   slide(title: title)[
     #set text(size: body-font-size)
@@ -220,6 +230,12 @@
 //
 // The date defaults to the current build date (datetime.today()).
 // Override it by passing `date:` in your `config-info(...)` call.
+//
+// Layout model: normal slides use real page margins — the green header
+// bar lives in the top margin and the three-segment footer lives in
+// the bottom margin, both configured through Touying's `config-page`.
+// Body content (including footnotes) flows in the content area between
+// them, so default Typst footnotes appear above the footer bar.
 #let bit-theme(
   aspect-ratio: "16-9",
   progress-bar: false,

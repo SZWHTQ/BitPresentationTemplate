@@ -152,6 +152,19 @@
   )
 }
 
+// Absolute footer overlay — wraps footer-content(self) in a full-bleed
+// bottom placement.  Used by special slides (title, section, ending)
+// that run on a zero-margin page with absolutely positioned content,
+// where there is no bottom margin for a page footer to live in.
+#let render-footer(self) = {
+  place(
+    bottom + left,
+    dx: 0pt,
+    dy: 0pt,
+    footer-content(self),
+  )
+}
+
 // Green block component for theorem / lemma / quote content.
 //
 // Usage:
