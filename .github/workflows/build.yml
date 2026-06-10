@@ -1,0 +1,35 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Typst
+        uses: typst-community/setup-typst@v3
+        with:
+          typst-version: "0.14.2"
+
+      - name: Install theme to local package namespace
+        run: make install
+
+      - name: Compile example deck
+        run: typst compile examples/replica.typ examples/replica.pdf
+
+      - name: Compile smoke-test deck
+        run: typst compile main.typ main.pdf
+
+      - name: Upload rendered PDFs
+        uses: actions/upload-artifact@v4
+        with:
+          name: rendered-decks
+          path: |
+            examples/replica.pdf
+            main.pdf
