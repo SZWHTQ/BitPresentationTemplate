@@ -171,33 +171,6 @@
 //   #green-block[Lemma 1][
 //     Content of the lemma ...
 //   ]
-// #let green-block(title, body) = {
-//   block(
-//     width: 100%,
-//     above: 1em,
-//     below: 1em,
-//     radius: 0.3em,
-//     stroke: (paint: bit-green, thickness: 0.5pt),
-//     fill: bit-green,
-//     {
-//       rect(
-//         width: 100%,
-//         fill: bit-green-dark,
-//         radius: (top-left: 0.3em, top-right: 0.3em),
-//         inset: (right: 0.7em, left: 0.7em, top: 0.3em, bottom: 0.3em),
-//         text(fill: text-light, weight: "bold")[#title],
-//       )
-//       rect(
-//         width: 100%,
-//         fill: bit-green-pale,
-//         radius: (bottom-left: 0.3em, bottom-right: 0.3em),
-//         inset: (right: 0.8em, left: 0.8em, top: 0em, bottom: 0.7em),
-//         body,
-//       )
-//     },
-//   )
-// }
-
 #let green-block(title, body) = {
   block(
     width: 100%,

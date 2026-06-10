@@ -6,7 +6,6 @@
 #let bit-green-light = rgb("#dfeee6")
 #let bit-green-pale = rgb("#edf6f1")
 
-#let page-bg = white
 #let text-dark = rgb("#111111")
 #let text-light = white
 

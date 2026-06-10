@@ -1,0 +1,3 @@
+# Build artifact from the smoke-test entry point.
+# examples/replica.pdf is intentionally tracked as a rendered showcase.
+/main.pdf

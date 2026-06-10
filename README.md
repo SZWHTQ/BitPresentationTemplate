@@ -90,6 +90,8 @@ The main theme function.  Use with `#show: bit-theme.with(...)`.
 |---|---|---|
 | `aspect-ratio` | `"16-9"` | Slide aspect ratio |
 | `progress-bar` | `false` | Show a thin progress bar below the header |
+| `institution` | `北京理工大学` | Default institution (overridden by `config-info`) |
+| `logo` | `bit_logo.pdf` | Default title-slide logo (overridden by `config-info`) |
 | `..args` | — | Forwarded to `touying-slides.with()` |
 
 ### `title-slide`
@@ -241,8 +243,10 @@ config-store(
 )
 ```
 
-If `title-institute-logo` is not set, the title slide falls back to plain
-institution text from `config-info(institution: ...)`.
+By default `title-institute-logo` is set to `header.svg`, so the title
+slide shows that emblem.  Pass `title-institute-logo: none` via
+`config-store` to fall back to plain institution text from
+`config-info(institution: ...)`.
 
 ## Layout model
 

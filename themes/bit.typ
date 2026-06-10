@@ -291,10 +291,16 @@
       header-logo: header-logo,
       title-institute-logo: title-institute-logo,
     ),
-    // Default date: current build date.  Overridden by user-supplied
-    // config-info(date: ...) if present (later args win in merge).
+    // Theme defaults for info fields.  Each is overridden by the
+    // user-supplied config-info(...) in `..args` if present, since later
+    // args win the merge.
+    //   date        — current build date.
+    //   logo        — title-slide main logo.
+    //   institution — footer + title-slide institution text.
     config-info(
       date: datetime.today(),
+      logo: logo,
+      institution: institution,
     ),
     ..args,
   )
