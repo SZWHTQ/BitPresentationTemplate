@@ -13,6 +13,23 @@
 #import "tokens.typ": *
 #import "components.typ": *
 
+// Bundled asset accessors.
+//
+// These are functions, not bare `image(...)` bindings, on purpose:
+// a module-level `image("...")` is evaluated eagerly at import time and
+// would fail to load if the file were ever missing, breaking `import *`
+// for everyone.  Wrapping each asset in a function makes loading lazy —
+// the file is only read when the accessor is actually called.
+//
+// The paths resolve relative to THIS file, so they stay correct whether
+// the theme is vendored or consumed as a published package, regardless
+// of the user's working directory.
+//
+//   #import "@preview/bit-presentation-template:0.1.0": bit-logo, bit-emblem
+//   config-info(logo: bit-logo())
+#let bit-logo() = image("assets/bit_logo.pdf")
+#let bit-emblem() = image("assets/header.svg")
+
 // Normal content slide.
 //
 // When triggered by a level-2 heading (`== Frame Title`), the title is
@@ -195,17 +212,58 @@
   touying-slide(self: self, slide-body)
 })
 
+// Focus slide — a full-bleed green slide for a single emphasized
+// takeaway (Beamer's "standout" frame).  The content is rendered large,
+// centered, and in the light-on-green palette.  No header bar; the
+// footer overlay is kept for continuity.
+//
+// Usage:
+//   #focus-slide[The key result is X.]
+//   #focus-slide(size: 48pt)[Big idea]
+#let focus-slide(config: (:), size: 40pt, body) = touying-slide-wrapper(self => {
+  self = utils.merge-dicts(
+    self,
+    config-page(
+      fill: bit-green,
+      margin: 0pt,
+      header: none,
+      footer: none,
+    ),
+    config,
+  )
+  let slide-body = {
+    render-footer(self)
+    pad(
+      bottom: content-bottom-inset,
+      {
+        set std.align(center + horizon)
+        set text(fill: text-light, size: size, weight: "bold")
+        body
+      },
+    )
+  }
+  touying-slide(self: self, slide-body)
+})
+
 // Table-of-contents slide.
 //
 // Usage:
 //   #toc-slide()
 //
-// Implemented as a single normal slide so the "目录" title bar and the
-// outline content always stay on the same page.  Uses Typst's built-in
-// `outline` to list `= Section` headings.  Pass an explicit `title:`
-// to override the default.
-#let toc-slide(title: [目录], depth: 1) = {
-  slide(title: title)[
+// Implemented as a single normal slide so the title bar and the outline
+// content always stay on the same page.  Uses Typst's built-in `outline`
+// to list `= Section` headings.
+//
+// The header title defaults to the localized "toc" label (目录 / Contents,
+// per the theme `lang`).  Pass an explicit `title:` to override it for a
+// single slide.
+#let toc-slide(title: auto, depth: 1) = {
+  let resolved-title = if title == auto {
+    self => self.store.labels.toc
+  } else {
+    title
+  }
+  slide(title: resolved-title)[
     #set text(size: body-font-size)
     #outline(title: none, depth: depth)
   ]
@@ -240,12 +298,23 @@
   aspect-ratio: "16-9",
   progress-bar: false,
   institution: [北京理工大学],
-  logo: image("assets/bit_logo.pdf", height: title-logo-height),
-  header-logo: image("assets/bit_logo.pdf", height: header-logo-height),
-  title-institute-logo: image("assets/header.svg", height: title-institute-logo-height),
+  logo: bit-logo(),
+  header-logo: bit-logo(),
+  title-institute-logo: bit-emblem(),
+  lang: "zh",
+  labels: (:),
   ..args,
   body,
 ) = {
+  // Localized UI labels.  Built-in tables cover zh/en; `labels` lets the
+  // user override any individual key (e.g. labels: (toc: [Agenda])).
+  let default-labels = (
+    zh: (toc: [目录]),
+    en: (toc: [Contents]),
+  )
+  let base = default-labels.at(lang, default: default-labels.en)
+  let resolved-labels = base + labels
+
   show: touying-slides.with(
     config-page(
       ..utils.page-args-from-aspect-ratio(aspect-ratio),
@@ -290,6 +359,8 @@
       progress-bar: progress-bar,
       header-logo: header-logo,
       title-institute-logo: title-institute-logo,
+      lang: lang,
+      labels: resolved-labels,
     ),
     // Theme defaults for info fields.  Each is overridden by the
     // user-supplied config-info(...) in `..args` if present, since later
