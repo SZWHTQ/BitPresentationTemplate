@@ -1,0 +1,19 @@
+[package]
+name = "bit-presentation-template"
+version = "0.1.0"
+entrypoint = "lib.typ"
+authors = ["Qing Gnet"]
+license = "MIT"
+description = "A green Beijing-Institute-of-Technology-style Beamer theme for Touying."
+repository = "https://github.com/SZWHTQ/BitPresentationTemplate"
+keywords = ["presentation", "slides", "beamer", "touying", "bit", "university"]
+categories = ["presentation"]
+compiler = "0.12.0"
+exclude = [
+  "examples",
+  "main.typ",
+  "main.pdf",
+  "Makefile",
+  ".github",
+  ".gitignore",
+]
