@@ -102,6 +102,8 @@ The main theme function.  Use with `#show: bit-theme.with(...)`.
 | `progress-bar` | `false` | Show a thin progress bar below the header |
 | `institution` | `北京理工大学` | Default institution (overridden by `config-info`) |
 | `logo` | `bit_logo.pdf` | Default title-slide logo (overridden by `config-info`) |
+| `header-logo` | `auto` | Header logo (`auto` uses `self.info.logo`; pass `none` to hide it) |
+| `title-institute-logo` | `header.svg` | Optional title-slide institution mark (`none` falls back to institution text) |
 | `lang` | `"zh"` | UI label language (`"zh"` or `"en"`) — see [Localization](#localization) |
 | `labels` | `(:)` | Per-key label overrides, e.g. `(toc: [Agenda])` |
 | `..args` | — | Forwarded to `touying-slides.with()` |
@@ -168,18 +170,16 @@ configurable core.
 
 ### Optional header logo
 
-By default the header shows `self.info.logo`.  To use a different
-image in the header (e.g. `header.svg` as a wordmark), pass
-`header-logo` via `config-store`:
+By default the header shows `self.info.logo` (the `logo` value from
+`config-info`).  To use a different image in the header (e.g.
+`header.svg` as a wordmark), pass `header-logo`:
 
 ```typst
 #show: bit-theme.with(
   config-info(
     // logo defaults to the bundled bit_logo.pdf.
   ),
-  config-store(
-    header-logo: bit-emblem(),   // use header.svg as the header wordmark
-  ),
+  header-logo: bit-emblem(),   // use header.svg as the header wordmark
 )
 ```
 
@@ -246,9 +246,9 @@ See `themes/tokens.typ` for all tunable values:
 | `footnote-clearance` | `0.35em` | Space between body text and footnote separator |
 | `footnote-gap` | `0.2em` | Gap between consecutive footnotes |
 | `footnote-indent` | `1em` | Indentation of footnote body from marker |
-| `title-slide-title-y` | `4em` | Title box distance from page top |
+| `title-slide-title-y` | `3em` | Title box distance from page top |
 | `title-slide-info-y` | `8em` | Author / institution / date distance from page top |
-| `title-slide-logo-y` | `16em` | Logo distance from page top |
+| `title-slide-logo-y` | `14em` | Logo distance from page top |
 | `section-slide-title-y` | `9em` | Section title distance from page top |
 | `section-slide-title-size` | `36pt` | Section divider title font size |
 | `footer-left-fill` | `rgb("#004020")` | Left footer segment fill (darkest) |
@@ -256,7 +256,7 @@ See `themes/tokens.typ` for all tunable values:
 | `footer-right-fill` | `rgb("#006633")` | Right footer segment fill (lightest) |
 | `footer-columns` | `(34%, 1fr, 32%)` | Footer column widths |
 | `header-logo-height` | `2.0em` | Normal slide header bar logo |
-| `title-logo-height` | `4em` | Title slide main logo (e.g. bit_logo.pdf) |
+| `title-logo-height` | `6em` | Title slide main logo (e.g. bit_logo.pdf) |
 | `title-institute-logo-height` | `1.6em` | Title slide institution mark (e.g. header.svg) |
 
 ## Logo configuration
@@ -265,27 +265,26 @@ Three independent logo slots are available:
 
 | Slot | Token | Config key | Typical asset |
 |---|---|---|---|
-| Header bar logo | `header-logo-height` | `config-store(header-logo: ...)` | `header.svg` |
+| Header bar logo | `header-logo-height` | `header-logo: ...` or `config-store(header-logo: ...)` | `header.svg` |
 | Title slide main logo | `title-logo-height` | `config-info(logo: ...)` | `bit_logo.pdf` |
 | Title slide institution mark | `title-institute-logo-height` | `config-store(title-institute-logo: ...)` | `header.svg` |
 
 Recommended setup:
 
 ```typst
-config-info(
-  logo: image("themes/assets/bit_logo.pdf", height: title-logo-height),
-)
-
-config-store(
-  header-logo: image("themes/assets/header.svg", height: header-logo-height),
-  title-institute-logo: image("themes/assets/header.svg", height: title-institute-logo-height),
+#show: bit-theme.with(
+  config-info(
+    logo: bit-logo(),
+  ),
+  header-logo: bit-emblem(),
+  title-institute-logo: bit-emblem(),
 )
 ```
 
 By default `title-institute-logo` is set to `header.svg`, so the title
 slide shows that emblem.  Pass `title-institute-logo: none` via
-`config-store` to fall back to plain institution text from
-`config-info(institution: ...)`.
+`bit-theme.with(...)` or `config-store` to fall back to plain
+institution text from `config-info(institution: ...)`.
 
 ## Layout model
 

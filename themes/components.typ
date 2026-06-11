@@ -18,8 +18,8 @@
 //   otherwise — the given content, or a `self => content` function.
 //
 // The logo is resolved as follows:
-//   1. `self.store.header-logo` — if set via `config-store`.
-//   2. `self.info.logo`        — the default logo from `config-info`.
+//   1. `self.store.header-logo` — if explicitly set via `config-store`.
+//   2. `self.info.logo`        — when `header-logo` is `auto` or unset.
 //   3. `none`                  — no logo displayed.
 #let render-header(self) = {
   let title = self.store.at("title", default: auto)
@@ -31,10 +31,11 @@
   }
   let subtitle = self.store.at("subtitle", default: none)
 
-  let header-logo = if "header-logo" in self.store and self.store.header-logo != none {
-    self.store.header-logo
-  } else if self.info.logo != none {
+  let stored-header-logo = self.store.at("header-logo", default: auto)
+  let header-logo = if stored-header-logo == auto {
     self.info.logo
+  } else if stored-header-logo != none {
+    self.store.header-logo
   } else {
     none
   }

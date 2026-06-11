@@ -282,11 +282,11 @@
 //       title: [...],
 //       author: [...],
 //       institution: [...],
-//       logo: image("themes/assets/bit_logo.pdf", height: header-logo-height),
+//       logo: bit-logo(),
 //     ),
 //     // Optional: separate header emblem
 //     // config-store(
-//     //   header-logo: image("themes/assets/header.svg", height: header-logo-height),
+//     //   header-logo: bit-emblem(),
 //     // ),
 //   )
 //
@@ -303,7 +303,7 @@
   progress-bar: false,
   institution: [北京理工大学],
   logo: bit-logo(),
-  header-logo: bit-logo(),
+  header-logo: auto,
   title-institute-logo: bit-emblem(),
   lang: "zh",
   labels: (:),
