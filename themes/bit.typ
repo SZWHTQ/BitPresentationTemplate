@@ -213,13 +213,7 @@
   )
   let slide-body = {
     render-footer(self)
-    pad(
-      bottom: content-bottom-inset,
-      {
-        set std.align(center + horizon)
-        body
-      },
-    )
+    place(center + horizon, dy: -content-bottom-inset / 2, align(center, body))
   }
   touying-slide(self: self, slide-body)
 })
@@ -245,14 +239,10 @@
   )
   let slide-body = {
     render-footer(self)
-    pad(
-      bottom: content-bottom-inset,
-      {
-        set std.align(center + horizon)
-        set text(fill: text-light, size: size, weight: "bold")
-        body
-      },
-    )
+    place(center + horizon, dy: -content-bottom-inset / 2, align(center)[
+      #set text(fill: text-light, size: size, weight: "bold")
+      #body
+    ])
   }
   touying-slide(self: self, slide-body)
 })
