@@ -30,6 +30,14 @@
 #let bit-logo() = image("assets/bit_logo.pdf")
 #let bit-emblem() = image("assets/header.svg")
 
+#let display-info-date(self, info) = {
+  if type(info.date) == datetime {
+    info.date.display(self.at("datetime-format", default: auto))
+  } else {
+    info.date
+  }
+}
+
 // Normal content slide.
 //
 // When triggered by a level-2 heading (`== Frame Title`), the title is
@@ -147,7 +155,7 @@
         },
         
         if info.date != none and info.date != auto {
-          text(size: title-slide-date-size, fill: text-dark.lighten(35%), utils.display-info-date(self))
+          text(size: title-slide-date-size, fill: text-dark.lighten(35%), display-info-date(self, info))
         },
       )
     ])
