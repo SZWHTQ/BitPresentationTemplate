@@ -13,7 +13,7 @@
   aspect-ratio: "16-9",
   progress-bar: true,
   config-info(
-    title: [Work Progress],
+    title: [BIT Theme Template],
     author: [Author],
     institution: [北京理工大学],
   ),
@@ -65,6 +65,4 @@ populated.#footnote[A second footnote for spacing verification.]
 
 = 总结
 
-== Thanks
-
-谢谢!
+#ending-slide("谢谢！")
