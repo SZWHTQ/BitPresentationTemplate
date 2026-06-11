@@ -308,7 +308,7 @@ split the frame title from the frame body.
 - **Body**: flows in the content area between the margins.  Default
   Typst `#footnote[...]` entries belong to the body flow and render at
   the bottom of the content area, above the footer bar.
-- **Special slides** (title, section divider, ending): use a zero-margin
+- **Special slides** (title, section divider, ending, focus): use a zero-margin
   page (`config-page(margin: 0pt, header: none, footer: none)`) with
   absolutely positioned content and the `render-footer(self)` overlay.
 
@@ -399,7 +399,7 @@ in order of preference:
   from `= Section` headings.  If `outline()` returns empty (e.g. all
   sections follow the TOC slide), Typst may need a second compilation
   pass to resolve references.
-- **Special slides use overlay footer:** Title, section, and ending
+- **Special slides use overlay footer:** Title, section, ending, and focus
   slides use the absolute `place(bottom + left, ...)` overlay for the
   footer.  Footnotes inside these special slides may overlap the
   footer.  Only normal content slides (via `== Heading` or `#slide()`)
