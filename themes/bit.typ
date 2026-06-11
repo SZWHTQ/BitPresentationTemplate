@@ -124,28 +124,32 @@
 
     // Green rounded title box
     place(top + center, dy: title-slide-title-y, rect(
-      width: 78%,
+      width: 95%,
       fill: bit-green,
       radius: 0.45em,
-      inset: (x: 1.5em, y: 0.8em),
+      inset: (x: 1.5em, y: 1.2em),
       align(center, text(fill: text-light, size: header-title-size, weight: "bold", info.title)),
     ))
 
     // Author / institution / date
     place(top + center, dy: title-slide-info-y, align(center)[
-      #text(size: 1.05em, fill: text-dark, info.author)
-      // Institution: prefer an image logo (via config-store) over plain text.
-      #if "title-institute-logo" in self.store and self.store.title-institute-logo != none {
-        v(0.4em)
-        box(height: title-institute-logo-height, self.store.title-institute-logo)
-      } else if info.institution != none {
-        v(0.4em)
-        text(size: 0.85em, fill: text-dark, info.institution)
-      }
-      #if info.date != none and info.date != auto {
-        v(0.4em)
-        text(size: 0.8em, fill: text-dark.lighten(35%), utils.display-info-date(self))
-      }
+      #grid(
+        columns: (auto,),
+        row-gutter: title-slide-info-gap,
+        align: center,
+        
+        text(size: title-slide-author-size, fill: text-dark, info.author),
+        
+        if "title-institute-logo" in self.store and self.store.title-institute-logo != none {
+          box(height: title-institute-logo-height, self.store.title-institute-logo)
+        } else if info.institution != none {
+          text(size: title-slide-institute-size, fill: text-dark, info.institution)
+        },
+        
+        if info.date != none and info.date != auto {
+          text(size: title-slide-date-size, fill: text-dark.lighten(35%), utils.display-info-date(self))
+        },
+      )
     ])
 
     // Logo

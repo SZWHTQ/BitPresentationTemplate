@@ -42,9 +42,14 @@
 
 // Title slide — vertical positions measured from the physical page top.
 // Each element is placed via place(top + center, dy: ...).
-#let title-slide-title-y = 4em
+#let title-slide-title-y = 3em
 #let title-slide-info-y = 8em
-#let title-slide-logo-y = 16em
+#let title-slide-logo-y = 14em
+
+#let title-slide-info-gap = 0.75em
+#let title-slide-author-size = 1.05em
+#let title-slide-institute-size = 0.85em
+#let title-slide-date-size = 0.8em
 
 // Section divider slide — title vertical position and font size.
 #let section-slide-title-y = 9em
@@ -68,5 +73,5 @@
 //   title-logo-height           — title slide main logo (bit_logo.pdf).
 //   title-institute-logo-height — title slide institution mark (header.svg).
 #let header-logo-height = 2.0em
-#let title-logo-height = 4em
+#let title-logo-height = 6em
 #let title-institute-logo-height = 1.6em
