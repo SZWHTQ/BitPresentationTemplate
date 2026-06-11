@@ -51,6 +51,10 @@ including block environments and title slides.
 The overall design is inspired by classic LaTeX Beamer themes
 commonly used at Beijing Institute of Technology.
 
+==
+
+Empty frame title should suppress the header.
+
 == Subtitle Demo
 
 This slide is created by a level-2 heading.  The slide title in the
@@ -65,9 +69,9 @@ form with `subtitle:`.
   the main title in a lighter shade, providing additional context for
   the slide content.
 
-  Subtitles are optional — they are only available through the explicit
-  `#slide(title: ..., subtitle: ...)` form, since Markdown headings do
-  not carry subtitle information.
+  Subtitles are optional.  Use the explicit
+  `#slide(title: ..., subtitle: ...)` form, or opt in to heading-based
+  subtitles with `config-store(heading-subtitle: true)`.
 ]
 
 == Lemma and Formal Results
@@ -171,4 +175,3 @@ Questions and discussion are welcome.
 
 // A full-bleed emphasis slide for the closing takeaway.
 #focus-slide[Preemptive broadcasting is never worse.]
-

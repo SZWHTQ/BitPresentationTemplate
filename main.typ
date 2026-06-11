@@ -17,6 +17,9 @@
     author: [Author],
     institution: [北京理工大学],
   ),
+  config-store(
+    heading-subtitle: true,
+  ),
 )
 
 #title-slide()
@@ -26,10 +29,15 @@
 = 使用示例
 
 == Hello
+=== Heading Subtitle
 
 Welcome to the Bit Theme for Touying!
 
 This is a green university-style presentation theme.
+
+==
+
+This slide has no header because the level-2 heading is empty.
 
 == Using Blocks
 
@@ -49,6 +57,10 @@ populated.#footnote[A second footnote for spacing verification.]
 #green-block[Note][
   Content with a footnote#footnote[Footnote text inside a green block.]
   inside the green-block environment.
+]
+
+#slide(title: none)[
+  This manual slide also has no header.
 ]
 
 = 总结

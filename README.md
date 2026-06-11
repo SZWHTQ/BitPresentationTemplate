@@ -64,6 +64,31 @@ More content.
 - `== Frame Title` — creates one normal content slide containing both
   the title (in the top header bar) and the following body content.
   The title and body are never split across pages.
+- `==` with an empty title — creates one normal content slide without
+  the top header bar.  The footer remains visible and the body content
+  stays in the normal content area.
+
+By default, `===` headings remain normal level-3 headings in the slide
+body.  To opt in to heading-based subtitles, enable `heading-subtitle`:
+
+```typst
+#show: bit-theme.with(
+  config-store(
+    heading-subtitle: true,
+  ),
+)
+
+= Section
+
+== Frame Title
+=== Subtitle
+
+Frame content.
+```
+
+When enabled, the current `===` heading is rendered as a smaller
+subtitle below the `==` title and level-3 headings are hidden from
+normal slide bodies.
 
 ### Advanced: explicit `#slide()`
 
@@ -71,7 +96,8 @@ The explicit form is an escape hatch for slides that need a subtitle,
 a manual title override, or no header bar at all.  Prefer headings for
 ordinary content slides.
 
-For slides that need a subtitle or special layout, use the explicit form:
+For slides that need a subtitle or special layout, use the explicit form.
+The subtitle is rendered below the title:
 
 ```typst
 #slide(title: [Frame Title], subtitle: [Optional subtitle])[
@@ -79,7 +105,7 @@ For slides that need a subtitle or special layout, use the explicit form:
 ]
 ```
 
-Pass `title: none` to suppress the header bar:
+Pass `title: none` to manually suppress the header bar:
 
 ```typst
 #slide(title: none)[
@@ -231,14 +257,15 @@ See `themes/tokens.typ` for all tunable values:
 | `bit-green-dark` | `rgb("#004020")` | Footer bar, block title bar |
 | `bit-green-light` | `rgb("#dfeee6")` | Accent backgrounds |
 | `bit-green-pale` | `rgb("#edf6f1")` | Block body background |
-| `header-height` | `2.35em` | Header bar height (fixed) |
+| `header-height` | `2.65em` | Header bar height (fixed) |
 | `footer-height` | `0.85em` | Footer bar height (fixed) |
 | `content-x-margin` | `1.7em` | Horizontal page margin for body content |
-| `content-top-inset` | `3.25em` | Top page margin — must be > `header-height` |
+| `content-top-inset` | `3.40em` | Top page margin — must be > `header-height` |
 | `content-bottom-inset` | `1.0em` | Extra bottom margin above the footer bar |
 | `progress-bar-height` | `3pt` | Progress bar thickness (below the header) |
 | `header-title-size` | `22pt` | Slide title text in header |
-| `header-subtitle-size` | `16pt` | Subtitle text in header |
+| `header-subtitle-size` | `13pt` | Subtitle text in header |
+| `header-title-subtitle-gap` | `0.4em` | Vertical gap between header title and subtitle |
 | `body-font-size` | `20pt` | Default body text |
 | `body-leading` | `1.25em` | Body text line spacing |
 | `footer-font-size` | `12pt` | Footer text |
@@ -390,9 +417,10 @@ in order of preference:
   normal slides" — do not rely on pixel-exact positioning.
 - **No auto-fit for long content:** A single slide does not shrink to
   fit oversized body text — see [Handling content overflow](#handling-content-overflow).
-- **Subtitle only via explicit `#slide()`:** Markdown headings do not
-  carry subtitle information.  Use `#slide(title: ..., subtitle: ...)`
-  when you need a subtitle.
+- **Heading subtitles hide level-3 headings:** When
+  `config-store(heading-subtitle: true)` is enabled, `===` headings are
+  consumed as header subtitles and all level-3 headings in normal slide
+  bodies are hidden.
 - **`== Heading` size limit:** Very long heading text may overflow the
   header bar.  Keep slide titles concise.
 - **`toc-slide` depends on `outline`:** The table of contents reads
