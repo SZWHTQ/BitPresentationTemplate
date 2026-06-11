@@ -24,8 +24,8 @@
 // 2. Global typography
 // Defaults for normal slide body text. Region-specific sizes live with the
 // region they control.
-#let body-font-size = 20pt
-#let body-leading = 1.25em
+#let body-font-size = 18pt
+#let body-leading = 0.75em
 
 // 3. Page frame and content area
 // Normal slides use Touying page margins for body content. The header and
@@ -44,7 +44,7 @@
 #let header-logo-height = 2.0em
 #let header-x-inset-left = 1.1em
 #let header-x-inset-right = 1.0em
-#let header-title-subtitle-gap = 0.4em
+#let header-title-subtitle-gap = 0.6em
 #let progress-bar-height = 3pt
 
 // 5. Footer
