@@ -124,18 +124,18 @@
 
     // Green rounded title box
     place(top + center, dy: title-slide-title-y, rect(
-      width: 95%,
-      fill: bit-green,
-      radius: 0.45em,
-      inset: (x: 1.5em, y: 1.2em),
-      align(center, text(fill: text-light, size: header-title-size, weight: "bold", info.title)),
+      width: title-slide-title-box-width,
+      fill: title-slide-title-box-fill,
+      radius: title-slide-title-box-radius,
+      inset: title-slide-title-box-inset,
+      align(center, text(fill: text-light, size: title-slide-title-size, weight: "bold", info.title)),
     ))
 
     // Author / institution / date
     place(top + center, dy: title-slide-info-y, align(center)[
       #grid(
         columns: (auto,),
-        row-gutter: title-slide-info-gap,
+        row-gutter: title-slide-author-institute-gap,
         align: center,
         
         text(size: title-slide-author-size, fill: text-dark, info.author),
@@ -180,10 +180,10 @@
   let slide-body = {
     render-footer(self)
     place(top + center, dy: section-slide-title-y, align(center)[
-      #set text(size: section-slide-title-size, fill: bit-green, weight: "bold")
+      #set text(size: section-slide-title-size, fill: section-slide-title-fill, weight: "bold")
       #utils.display-current-heading(level: level, numbered: numbered)
-      #v(0.5em)
-      #block(height: 2.5pt, width: 40%, fill: bit-green)
+      #v(section-slide-rule-gap)
+      #block(height: section-slide-rule-height, width: section-slide-rule-width, fill: section-slide-rule-fill)
       #body
     ])
   }
@@ -261,14 +261,14 @@
 // The header title defaults to the localized "toc" label (目录 / Contents,
 // per the theme `lang`).  Pass an explicit `title:` to override it for a
 // single slide.
-#let toc-slide(title: auto, depth: 1) = {
+#let toc-slide(title: toc-title, depth: toc-depth) = {
   let resolved-title = if title == auto {
     self => self.store.labels.toc
   } else {
     title
   }
   slide(title: resolved-title)[
-    #set text(size: body-font-size)
+    #set text(size: toc-body-font-size)
     #outline(title: none, depth: depth)
   ]
 }
