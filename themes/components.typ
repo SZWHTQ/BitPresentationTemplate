@@ -42,12 +42,12 @@
   rect(
     width: 100%,
     height: header-height,
-    fill: bit-green,
+    fill: header-fill,
     inset: 0pt,
     box(
       width: 100%,
       height: header-height,
-      inset: (left: 1.1em, right: 1.0em),
+      inset: (left: header-x-inset-left, right: header-x-inset-right),
       grid(
         columns: (1fr, auto),
         align: (left + horizon, right + horizon),
@@ -56,7 +56,7 @@
           align(left + horizon)[
             #text(fill: text-light, size: header-title-size, weight: "bold")[#resolved-title]
             #if subtitle != none [
-              #h(0.6em)
+              #h(header-title-subtitle-gap)
               #text(fill: text-light.lighten(25%), size: header-subtitle-size)[#subtitle]
             ]
           ],
@@ -103,7 +103,7 @@
       fill: footer-left-fill,
       inset: 0pt,
       align(center + horizon,
-        pad(x: 0.8em,
+        pad(x: footer-x-inset,
           text(fill: text-light, size: footer-font-size)[
             #self.info.author
             #if self.info.institution != none [
@@ -178,16 +178,16 @@
 #let block-env(
   body,
   title: none,
-  bar-fill: bit-green-dark,
-  body-fill: bit-green-pale,
-  border: bit-green,
+  bar-fill: block-title-fill,
+  body-fill: block-body-fill,
+  border: block-border-fill,
 ) = {
   block(
     width: 100%,
-    above: 1em,
-    below: 1em,
-    radius: 0.3em,
-    stroke: (paint: border, thickness: 0.5pt),
+    above: block-above,
+    below: block-below,
+    radius: block-radius,
+    stroke: (paint: border, thickness: block-border-thickness),
     fill: none,
     {
       grid(
@@ -197,12 +197,12 @@
         if title != none {
           rect(
             width: 100%,
-            height: 1.35em,
+            height: block-title-height,
             fill: bar-fill,
-            radius: (top-left: 0.3em, top-right: 0.3em),
-            inset: (x: 0.7em, y: 0pt),
+            radius: (top-left: block-radius, top-right: block-radius),
+            inset: (x: block-title-x-inset, y: 0pt),
             align(left + horizon)[
-              #text(fill: text-light, weight: "bold")[#title]
+              #text(fill: block-title-text-fill, weight: block-title-text-weight)[#title]
             ],
           )
         },
@@ -211,16 +211,11 @@
           width: 100%,
           fill: body-fill,
           radius: if title != none {
-            (bottom-left: 0.3em, bottom-right: 0.3em)
+            (bottom-left: block-radius, bottom-right: block-radius)
           } else {
-            0.3em
+            block-radius
           },
-          inset: (
-            left: 0.8em,
-            right: 0.8em,
-            top: 0.7em,
-            bottom: 0.7em,
-          ),
+          inset: block-body-inset,
           body,
         ),
       )
@@ -253,9 +248,9 @@
 #let alert-block(body, title: none) = block-env(
   body,
   title: title,
-  bar-fill: bit-green-dark,
-  body-fill: bit-green-light,
-  border: bit-green-dark,
+  bar-fill: alert-block-title-fill,
+  body-fill: alert-block-body-fill,
+  border: alert-block-border-fill,
 )
 
 // example-block — a low-emphasis callout in pale green.
@@ -264,7 +259,7 @@
 #let example-block(body, title: none) = block-env(
   body,
   title: title,
-  bar-fill: bit-green,
-  body-fill: bit-green-pale,
-  border: bit-green,
+  bar-fill: example-block-title-fill,
+  body-fill: example-block-body-fill,
+  border: example-block-border-fill,
 )
