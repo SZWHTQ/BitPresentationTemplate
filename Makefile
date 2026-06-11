@@ -3,9 +3,9 @@
 # Targets:
 #   make install          — install the package to the @local Typst namespace
 #   make uninstall        — remove the installed @local package
-#   make compile-example  — compile examples/replica.typ
-#   make compile-main     — compile main.typ
-#   make watch-example    — watch-compile examples/replica.typ
+#   make compile-example  — install, then compile examples/replica.typ
+#   make compile-main     — install, then compile main.typ
+#   make watch-example    — install, then watch-compile examples/replica.typ
 #   make all              — compile both documents
 #   make clean            — remove generated PDFs
 
@@ -49,16 +49,16 @@ uninstall:
 	rm -rf "$(LOCAL_PKG_DIR)"
 	@echo "Removed $(NAME):$(VERSION) from the @local namespace."
 
-compile-example:
+compile-example: install
 	$(TYPST) compile examples/replica.typ
 
-compile-main:
+compile-main: install
 	$(TYPST) compile main.typ
 
-watch-example:
+watch-example: install
 	$(TYPST) watch examples/replica.typ
 
-watch-main:
+watch-main: install
 	$(TYPST) watch main.typ
 
 clean:

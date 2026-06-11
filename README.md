@@ -214,9 +214,9 @@ typst compile examples/replica.typ
 typst compile main.typ
 
 # Or use the Makefile:
-make compile-example
-make compile-main
-make watch-example
+make compile-example  # installs first, then compiles
+make compile-main     # installs first, then compiles
+make watch-example    # installs first, then watches
 make all          # both decks
 make clean        # remove generated PDFs
 ```
