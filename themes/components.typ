@@ -76,6 +76,12 @@
     return box(width: 0pt, height: 0pt, hide(it))
   }
   if it.has("children") {
+    // Only decompose content sequences. Structured layout elements (grid,
+    // table, stack, etc.) also expose a "children" field but must not be
+    // flattened — doing so destroys their layout semantics.
+    if it.func() in (grid, table, stack, grid.cell, table.cell, list, enum) {
+      return it
+    }
     let children = ()
     let drop-next-break = false
     for child in it.children {
