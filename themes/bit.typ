@@ -68,6 +68,12 @@
     self.store.title = title
   }
   self.store.subtitle = subtitle
+  let source-bodies = bodies.pos()
+  let slide-bodies = if self.store.at("heading-subtitle", default: false) {
+    source-bodies.map(remove-depth-3-headings)
+  } else {
+    source-bodies
+  }
   let header(self) = {
     set std.align(top)
     grid(
@@ -98,6 +104,21 @@
     set text(size: body-font-size, fill: text-dark)
     set par(leading: body-leading)
     show: setting
+    if self.store.at("heading-subtitle", default: false) {
+      show heading.where(depth: 3): it => none
+    }
+    // No-title slides should use the top space normally reserved for the header.
+    let no-title-body-offset = 0.75em - content-top-inset
+    if title == none {
+      v(no-title-body-offset)
+    } else if title == auto {
+      context {
+        let current = utils.current-heading(level: 2)
+        if current == none or not content-has-visible-content(current.body) {
+          v(no-title-body-offset)
+        }
+      }
+    }
     body
   }
   touying-slide(
@@ -106,7 +127,7 @@
     repeat: repeat,
     setting: new-setting,
     composer: composer,
-    ..bodies,
+    ..slide-bodies,
   )
 })
 
@@ -336,6 +357,9 @@
       init: (self: none, body) => {
         set text(size: body-font-size, fill: text-dark)
         set par(leading: body-leading)
+        if self.store.at("heading-subtitle", default: false) {
+          show heading.where(depth: 3): it => none
+        }
         // Default footnote styling — compact size with consistent
         // spacing above the bottom margin (and thus the footer bar).
         set footnote.entry(
@@ -359,6 +383,7 @@
       title: auto,
       subtitle: none,
       progress-bar: progress-bar,
+      heading-subtitle: false,
       header-logo: header-logo,
       title-institute-logo: title-institute-logo,
       lang: lang,

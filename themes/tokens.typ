@@ -32,19 +32,19 @@
 // footer live in the page header/footer areas, so the top and bottom insets
 // reserve space for those bars outside the normal content flow.
 #let content-x-margin = 1.7em
-#let content-top-inset = 3.25em
+#let content-top-inset = 3.55em
 #let content-bottom-inset = 1.0em
 
 // 4. Header
 // Controls the green header bar on normal slides. The progress bar is
 // visually attached below this header when enabled.
-#let header-height = 2.35em
+#let header-height = 2.65em
 #let header-title-size = 22pt
-#let header-subtitle-size = 16pt
+#let header-subtitle-size = 13pt
 #let header-logo-height = 2.0em
 #let header-x-inset-left = 1.1em
 #let header-x-inset-right = 1.0em
-#let header-title-subtitle-gap = 0.6em
+#let header-title-subtitle-gap = 0.4em
 #let progress-bar-height = 3pt
 
 // 5. Footer

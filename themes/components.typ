@@ -4,6 +4,99 @@
 #import "@preview/touying:0.7.4": *
 #import "tokens.typ": *
 
+// Returns whether content contains something that should be visible as a title.
+#let content-has-visible-content(it) = {
+  if it == none {
+    return false
+  }
+  if it in ([], [ ], parbreak(), linebreak()) {
+    return false
+  }
+  if type(it) != content {
+    return true
+  }
+  if it.func() in (text, math.equation, raw, image) {
+    return true
+  }
+  if it.has("body") {
+    return content-has-visible-content(it.body)
+  }
+  if it.has("child") {
+    return content-has-visible-content(it.child)
+  }
+  if it.has("children") {
+    return it.children.any(content-has-visible-content)
+  }
+  false
+}
+
+#let visible-current-heading(level) = {
+  let current = utils.current-heading(level: level)
+  if current == none {
+    return none
+  }
+  if current.location().page() != here().page() {
+    return none
+  }
+  if not content-has-visible-content(current.body) {
+    return none
+  }
+  current
+}
+
+#let first-visible-heading-on-page(level) = {
+  let current-page = here().page()
+  let headings = query(heading).filter(h => (
+    h.location().page() == current-page
+      and h.level == level
+      and content-has-visible-content(h.body)
+  ))
+  headings.at(0, default: none)
+}
+
+#let resolve-header-subtitle(self) = {
+  let subtitle = self.store.at("subtitle", default: none)
+  if subtitle != none {
+    return subtitle
+  }
+  if self.store.at("heading-subtitle", default: false) {
+    let current = first-visible-heading-on-page(3)
+    if current != none {
+      return current.body
+    }
+  }
+  none
+}
+
+#let remove-depth-3-headings(it) = {
+  if type(it) != content {
+    return it
+  }
+  if it.func() == heading and it.depth == 3 {
+    return box(width: 0pt, height: 0pt, hide(it))
+  }
+  if it.has("children") {
+    let children = ()
+    let drop-next-break = false
+    for child in it.children {
+      if type(child) == content and child.func() == heading and child.depth == 3 {
+        children.push(box(width: 0pt, height: 0pt, hide(child)))
+        drop-next-break = true
+      } else {
+        let filtered = remove-depth-3-headings(child)
+        if drop-next-break and filtered in (parbreak(), linebreak()) {
+          drop-next-break = false
+        } else {
+          children.push(filtered)
+          drop-next-break = false
+        }
+      }
+    }
+    return children.sum(default: none)
+  }
+  it
+}
+
 // Top header bar for normal content slides.
 //
 // Returns the full-width green bar content for use as the page header
@@ -21,16 +114,7 @@
 //   1. `self.store.header-logo` — if explicitly set via `config-store`.
 //   2. `self.info.logo`        — when `header-logo` is `auto` or unset.
 //   3. `none`                  — no logo displayed.
-#let render-header(self) = {
-  let title = self.store.at("title", default: auto)
-  if title == none { return }
-  let resolved-title = if title == auto {
-    utils.display-current-heading(level: 2)
-  } else {
-    utils.call-or-display(self, title)
-  }
-  let subtitle = self.store.at("subtitle", default: none)
-
+#let render-header-bar(self, resolved-title, subtitle: none) = {
   let stored-header-logo = self.store.at("header-logo", default: auto)
   let header-logo = if stored-header-logo == auto {
     self.info.logo
@@ -55,11 +139,17 @@
         box(
           height: header-height,
           align(left + horizon)[
-            #text(fill: text-light, size: header-title-size, weight: "bold")[#resolved-title]
-            #if subtitle != none [
-              #h(header-title-subtitle-gap)
-              #text(fill: text-light.lighten(25%), size: header-subtitle-size)[#subtitle]
-            ]
+            #if subtitle == none {
+              text(fill: text-light, size: header-title-size, weight: "bold")[#resolved-title]
+            } else {
+              grid(
+                columns: (auto,),
+                row-gutter: header-title-subtitle-gap,
+                align: left,
+                text(fill: text-light, size: header-title-size, weight: "bold")[#resolved-title],
+                text(fill: text-light.lighten(25%), size: header-subtitle-size)[#subtitle],
+              )
+            }
           ],
         ),
         box(
@@ -73,6 +163,34 @@
       ),
     ),
   )
+}
+
+#let render-header(self) = {
+  let title = self.store.at("title", default: auto)
+  if title == none { return }
+
+  context {
+    let subtitle = resolve-header-subtitle(self)
+
+    if title == auto {
+      let current = visible-current-heading(2)
+      if current == none {
+        none
+      } else {
+        render-header-bar(
+          self,
+          utils.display-current-heading(level: 2),
+          subtitle: subtitle,
+        )
+      }
+    } else {
+      render-header-bar(
+        self,
+        utils.call-or-display(self, title),
+        subtitle: subtitle,
+      )
+    }
+  }
 }
 
 // Footer content — three contiguous colored segments forming a Beamer-style
